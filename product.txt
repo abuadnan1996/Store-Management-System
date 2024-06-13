@@ -1,0 +1,1 @@
+Item No	Product Name	Tag	Plant Name	Store	Type	Size	Range	Quantity	Rack	Column	Description	Part No	Box No
