@@ -10,8 +10,13 @@ class StoreManagementApp:
         self.root.title("Store Management App")
         self.root.geometry("1000x800")
         self.product_list = []
+        self.cart_list = []
+        self.popup_window=0
         self.item_no_counter = 1
         self.requisition_item_counter=1
+
+        #Boolean Flag for Withdraw window if searched or not
+        self.searched_withdraw=0
         self.setup_frames()
         self.setup_home_frame()
         self.setup_add_product_frame()
@@ -115,7 +120,7 @@ class StoreManagementApp:
         self.entry_search_add = ctk.CTkEntry(self.frame_middle_add)
         self.entry_search_add.grid(row=0, column=1, padx=5, pady=5)
         
-        ctk.CTkButton(self.frame_middle_add, text="Search", command=self.search_product).grid(row=0, column=2, padx=5, pady=5)
+        ctk.CTkButton(self.frame_middle_add, text="Search", command=self.search_product_add).grid(row=0, column=2, padx=5, pady=5)
         ctk.CTkButton(self.frame_middle_add, text="Clear Search", command=self.refresh_product_list).grid(row=0, column=3, padx=5, pady=5)
 
         # Bottom Frame Widgets
@@ -172,16 +177,17 @@ class StoreManagementApp:
         self.required_requisition = ctk.CTkEntry(self.frame_entries_withdraw)
         self.required_requisition.grid(row=0, column=3, padx=5, pady=5)
         # Requisited Items Table
-        self.tree_requisition = ttk.Treeview(self.frame_top_withdraw, columns=("SL No.", "Item No","Description","Quantity","Size","Remarks"), show="headings")
+        self.tree_requisition = ttk.Treeview(self.frame_top_withdraw, columns=("SL No.", "Item No","Product Name","Quantity","Size","Remarks"), show="headings")
         self.tree_requisition.column('SL No.',width=30)
         self.tree_requisition.column('Item No',width=100)
-        self.tree_requisition.column('Description',width=400)
+        self.tree_requisition.column('Product Name',width=400)
         self.tree_requisition.column('Quantity',width=100)
         self.tree_requisition.column('Size',width=100)
         self.tree_requisition.column('Remarks',width=100)
+
         self.tree_requisition.heading("SL No.", text="Sl No.")
         self.tree_requisition.heading("Item No", text="Item No")
-        self.tree_requisition.heading("Description", text="Description")
+        self.tree_requisition.heading("Product Name", text="Product Name")
         self.tree_requisition.heading("Quantity", text="Quantity")
         self.tree_requisition.heading("Size", text="Size")
         self.tree_requisition.heading("Remarks", text="Remarks")
@@ -200,11 +206,34 @@ class StoreManagementApp:
         self.entry_search_withdraw = ctk.CTkEntry(self.frame_middle_withdraw)
         self.entry_search_withdraw.grid(row=0, column=1, padx=5, pady=5)
         
-        ctk.CTkButton(self.frame_middle_withdraw, text="Search", command=self.search_product).grid(row=0, column=2, padx=5, pady=5)
+        ctk.CTkButton(self.frame_middle_withdraw, text="Search", command=self.search_product_withdraw).grid(row=0, column=2, padx=5, pady=5)
         ctk.CTkButton(self.frame_middle_withdraw, text="Clear Search", command=self.refresh_product_list_withdraw).grid(row=0, column=3, padx=5, pady=5)
         ctk.CTkLabel(self.frame_bottom_withdraw, text="Stock Items").pack(padx=10, pady = 10, fill="x")
         self.tree_withdraw = ttk.Treeview(self.frame_bottom_withdraw, columns=(
             "Item No", "Name","Quantity","Size","Type","Range","Store","Rack","Column","Box", "Description", "Plant Name", "Part No", "Tag"), show="headings")
+        
+        verscrlbar = ttk.Scrollbar(self.frame_bottom_withdraw, 
+                           orient ="vertical", 
+                           command = self.tree_withdraw.yview)
+        # Calling pack method w.r.to vertical 
+        # scrollbar
+        verscrlbar.pack(side ='right', fill ='both')
+        #resizing the scrollbar according to table size
+        self.tree_withdraw.configure(yscrollcommand=verscrlbar.set)
+
+        # self.tree_withdraw.column('Item No',width=60)
+        # self.tree_withdraw.column('Name',width=200)
+        # self.tree_withdraw.column('Quantity',width=60)
+        # self.tree_withdraw.column('Size',width=30)
+        # self.tree_withdraw.column('Range',width=50)
+        # self.tree_withdraw.column('Type',width=50)
+        # self.tree_withdraw.column('Store',width=50)
+        # self.tree_withdraw.column('Rack',width=50)
+        # self.tree_withdraw.column('Column',width=50)
+        # self.tree_withdraw.column('Box',width=50)
+        # self.tree_withdraw.column('Description',width=250)
+        
+
         self.tree_withdraw.heading("Item No", text="Item No")
         self.tree_withdraw.heading("Name", text="Product Name")
         self.tree_withdraw.heading("Quantity", text="Quantity")
@@ -220,11 +249,15 @@ class StoreManagementApp:
         self.tree_withdraw.heading("Part No", text="Part No")
         self.tree_withdraw.heading("Tag", text="Tag")
         self.tree_withdraw.pack(fill="both", expand=True)
+
         # self.tree_withdraw.insert("", "end",("Item No","1"))
         ctk.CTkButton(self.frame_withdraw_product, text="Back to Home", command=self.show_home_frame).pack(pady=10)
         ctk.CTkButton(self.frame_withdraw_product, text="Print", command=self.print_popup).pack(pady=10)
-        self.tree_withdraw.bind("<Double-1>", lambda event: self.add_to_cart())
-        
+
+        self.tree_withdraw.bind("<Double-1>", lambda event: self.popup_quantity())
+
+        # lambda event: self.popup_quantity
+        # self.add_to_cart()
         self.refresh_product_list_withdraw()
         
 
@@ -261,7 +294,7 @@ class StoreManagementApp:
             messagebox.showerror("Export Error", f"An error occurred while exporting: {e}")
         
         workbook.save("products.xlsx")
-        messagebox.showinfo("Excel File", "Products saved to products.xlsx")
+        # messagebox.showinfo("Excel File", "Products saved to products.xlsx")
 
     def add_product(self):
         product_name = self.entry_product_name_add.get()
@@ -282,8 +315,8 @@ class StoreManagementApp:
         if not all([product_name, tag, plant_name, store, product_type, size, product_range, quantity, rack, column, box_no, description, part_no]):
             messagebox.showerror("Error", "Please fill all the fields.")
             return
-
-        item_no = self.item_no_counter
+        
+        item_no = f"{self.item_no_counter:06d}"
         self.item_no_counter += 1
 
         self.product_list.append({
@@ -305,7 +338,7 @@ class StoreManagementApp:
         self.export_to_excel()
         self.refresh_product_list()
         
-        # messagebox.showinfo("Success", "Product added successfully.")
+        messagebox.showinfo("Success", "Product added successfully.")
         self.clear_add_product_entries()
 
     def withdraw_product(self):
@@ -371,16 +404,15 @@ class StoreManagementApp:
             except Exception as e:
                 messagebox.showerror("Load Error", f"An error occurred while loading: {e}")
 
-    def search_product(self):
+    def search_product_withdraw(self):
             # search_term = self.entry_search_add.get() if isinstance(self.entry_search_add.get(), str) else str(self.entry_search_add.get()).lower()
             search_term = self.entry_search_withdraw.get() if isinstance(self.entry_search_withdraw.get(), str) else str(self.entry_search_withdraw.get()).lower()
-            
-
+            self.searched_withdraw=1
             for row in self.tree_add.get_children():
                 self.tree_add.delete(row)
             for row in self.tree_withdraw.get_children():
                 self.tree_withdraw.delete(row)
-
+            
             for product in self.product_list:
                 if (
                     search_term in str(product["Item No"]) or
@@ -390,6 +422,8 @@ class StoreManagementApp:
                     search_term in product["Description"].lower() or
                     search_term in product["Tag"].lower() or
                     search_term in product["Part No"].lower()):
+                    # refreshed_list.append(product)
+                    # print(f"Refreshed List: {refreshed_list}")
                     self.tree_add.insert("", "end", values=(
                         product["Item No"], 
                         product["Product Name"], 
@@ -421,7 +455,8 @@ class StoreManagementApp:
                         product["Part No"], 
                         product["Tag"]))
             
-    # def search_product(self):
+    def search_product_add(self):
+        pass
     #     search_term =[]
     #     if type(search_term) is int:
     #         try:
@@ -462,6 +497,7 @@ class StoreManagementApp:
                 product["Item No"], product["Product Name"], product["Quantity"],product["Size"], product["Type"], product["Range"], product["Store"], product["Rack"], product["Column"], product["Box"], product["Description"], product["Plant Name"], product["Part No"], product["Tag"]
             ))
     def refresh_product_list_withdraw(self):
+        self.searched_withdraw =0
         self.load_from_excel()
         for i in self.tree_withdraw.get_children():
             self.tree_withdraw.delete(i)
@@ -518,7 +554,30 @@ class StoreManagementApp:
         self.entry_part_no_add.delete(0, 'end')
         self.entry_box_no_add.delete(0, 'end')
         self.refresh_product_list()
-    
+    def popup_quantity(self):
+        popup = tk.Toplevel(self.root)
+        popup.title("Add Quantity")
+        popup.geometry("300x200")
+        print("Initiated")
+
+        def add_to_cart_():
+            self.add_to_cart(quantity.get())
+            # Code to handle printing can go here
+            print("Added To Cart")
+            popup.destroy()
+        def cancel_popup():
+            print("Cancelled")
+            popup.destroy()
+
+        # Add print options here (e.g., selection of specific details, number of copies)
+        tk.Label(popup, text="Quantity").pack(pady=5)
+        quantity = ctk.CTkEntry(popup)
+        quantity.pack(pady=5)
+        tk.Button(popup, text="Add to Cart", command=add_to_cart_).pack(pady=10)
+        tk.Button(popup, text="Cancel", command=cancel_popup).pack(pady=10)
+        
+        
+
     def generate_part_no(self, plant_name, type_, range_):
         plant_mapping = {
             "CHEMAX": "CHE",
@@ -533,30 +592,69 @@ class StoreManagementApp:
         plant_code = plant_mapping.get(plant_name.upper(), plant_name[:3].upper())
         part_no = f"{plant_code}-{type_.upper()}-{range_}"
         return part_no
-    def add_to_cart(self):
+    def add_to_cart(self,added_quantity):
+        selected_product=[]
         selected_item = self.tree_withdraw.selection()
         if not selected_item:
             return
-         
-        curntItem = self.tree_withdraw.focus()
-
-        item_index = self.tree_withdraw.index(curntItem)
-        curntItemNo = self.tree_withdraw.item(curntItem)["values"][0]
-        print(f"Current Item No. {curntItemNo}")
-        i=0
-        for product in self.product_list:
+        if self.searched_withdraw ==1 :
+                self.searched_withdraw ==0
+                selected_item_index = self.tree_withdraw.focus()
+                curntItemPartNo = self.tree_withdraw.item(selected_item_index)["values"][0]
+                curntItemPartNo = f"{curntItemPartNo:06d}"
+                print(f"Selected Item: {curntItemPartNo}")
+                for product in self.product_list:
                     if (
-                    str(curntItemNo) in str(product["Item No"])):
-                        print(product)
-                        
-        # selected_product = self.product_list[curntItemIndex-1]
-        # if(self.tree_requisition.get_children() == "NULL"):
-        #     self.requisition_item_counter=1
-        # self.tree_requisition.insert("", "end", values=(self.requisition_item_counter,selected_product["Item No"], selected_product["Product Name"], selected_product["Quantity"],selected_product["Size"]))
-        # self.requisition_item_counter +=1
+                        curntItemPartNo in str(product["Item No"])
+                    ):
+                        selected_product = product
+                        print(f"Selected Product from Search is {selected_product}")
+        if self.searched_withdraw ==0 :
+                
+                curntItem = self.tree_withdraw.focus()
+                # print(f"Current Item {curntItem}")
+                item_index = self.tree_withdraw.index(curntItem)
+                curntItem = self.tree_withdraw.item(curntItem)["values"]      
+                selected_product = self.product_list[item_index]
 
         
+        if(self.tree_requisition.get_children() == "NULL"):
+            self.requisition_item_counter=1
+
+        stock_quantity = selected_product["Quantity"]
+        remaining = int(stock_quantity) - int(added_quantity)
+        print(f"Stock Quantity: {stock_quantity}")
+        if (remaining) < 0:
+            print("Low Stock")
+            messagebox.showwarning("Warning!","Low Stock. Please try again")
+            return
+        self.product_list[item_index]["Quantity"] = str(int(self.product_list[item_index]["Quantity"]) - int(added_quantity))
         
+        cart = {
+            "SL No." :  self.requisition_item_counter,
+            "Item No" : selected_product["Item No"],
+            "Product Name": selected_product["Product Name"],
+            "Quantity" : added_quantity,
+            "Size" : selected_product["Size"]
+        }
+        self.cart_list.append(cart)
+        # print(self.cart_list)
+        # print(f"My Cart: {self.cart_list}")
+
+        self.requisition_item_counter +=1
+        self.export_to_excel()
+        self.refresh_cart()
+        self.refresh_product_list_withdraw()
+
+    def refresh_cart(self):
+        for i in self.tree_requisition.get_children():
+            self.tree_requisition.delete(i)
+        for product in self.cart_list:
+            self.tree_requisition.insert("", "end", values=(
+                product["SL No."], product["Item No"], product["Product Name"], product["Quantity"],product["Size"]))
+
+    
+
     def print_popup(self):
         popup = tk.Toplevel(self.root)
         popup.title("Print")
