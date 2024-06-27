@@ -8,7 +8,6 @@ class StoreManagementApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Store Management App")
-
         self.root.geometry("1040x800")
         self.product_list = []
         self.previous_product_list = []
@@ -68,61 +67,80 @@ class StoreManagementApp:
         self.frame_entries_add = ctk.CTkFrame(self.frame_top_add)
         self.frame_entries_add.pack(pady=10, padx=10)
 
+         # Row 0
         ctk.CTkLabel(self.frame_entries_add, text="Product Name:").grid(row=0, column=0, padx=5, pady=5)
         self.entry_product_name_add = ctk.CTkEntry(self.frame_entries_add)
         self.entry_product_name_add.grid(row=0, column=1, padx=5, pady=5)
 
-        ctk.CTkLabel(self.frame_entries_add, text="Tag:").grid(row=0, column=2, padx=5, pady=5)
-        self.entry_tag_add = ctk.CTkEntry(self.frame_entries_add)
-        self.entry_tag_add.grid(row=0, column=3, padx=5, pady=5)
+        ctk.CTkLabel(self.frame_entries_add, text="Brand:").grid(row=0, column=2, padx=5, pady=5)
+        self.entry_brand_add = ctk.CTkEntry(self.frame_entries_add)
+        self.entry_brand_add.grid(row=0, column=3, padx=5, pady=5)
 
-        ctk.CTkLabel(self.frame_entries_add, text="Plant Name:").grid(row=1, column=0, padx=5, pady=5)
-        self.entry_plant_name_add = ctk.CTkComboBox(self.frame_entries_add, values=["CHEMEX", "ZEHUA", "BTX", "HEXANE", "LCP", "TNS", "REFORMER 2", "CFU-10000BPD"])
-        self.entry_plant_name_add.grid(row=1, column=1, padx=5, pady=5)
-
-        ctk.CTkLabel(self.frame_entries_add, text="Store:").grid(row=1, column=2, padx=5, pady=5)
-        self.entry_store_add = ctk.CTkEntry(self.frame_entries_add)
-        self.entry_store_add.grid(row=1, column=3, padx=5, pady=5)
-
-        ctk.CTkLabel(self.frame_entries_add, text="Type:").grid(row=2, column=0, padx=5, pady=5)
-        self.entry_type_add = ctk.CTkComboBox(self.frame_entries_add, values=["PG", "PT", "LT","LG","FT","FI","TG","TT","TG","TE","SENSOR","PLC","IO CARD","PSU","SWITCH","IO CARD","INDICATOR","BUTTON",])
-        self.entry_type_add.grid(row=2, column=1, padx=5, pady=5)
-
-        ctk.CTkLabel(self.frame_entries_add, text="Size:").grid(row=2, column=2, padx=5, pady=5)
-        self.entry_size_add = ctk.CTkEntry(self.frame_entries_add)
-        self.entry_size_add.grid(row=2, column=3, padx=5, pady=5)
-
-        ctk.CTkLabel(self.frame_entries_add, text="Range:").grid(row=3, column=0, padx=5, pady=5)
-        self.entry_range_add = ctk.CTkEntry(self.frame_entries_add)
-        self.entry_range_add.grid(row=3, column=1, padx=5, pady=5)
-
-        ctk.CTkLabel(self.frame_entries_add, text="Quantity:").grid(row=3, column=2, padx=5, pady=5)
+        ctk.CTkLabel(self.frame_entries_add, text="Model:").grid(row=0, column=4, padx=5, pady=5)
+        self.entry_model_add = ctk.CTkEntry(self.frame_entries_add)
+        self.entry_model_add.grid(row=0, column=5, padx=5, pady=5)
+        # Row 1
+        ctk.CTkLabel(self.frame_entries_add, text="Quantity:").grid(row=1, column=0, padx=5, pady=5)
         self.entry_quantity_add = ctk.CTkEntry(self.frame_entries_add)
-        self.entry_quantity_add.grid(row=3, column=3, padx=5, pady=5)
+        self.entry_quantity_add.grid(row=1, column=1, padx=5, pady=5)
 
-        ctk.CTkLabel(self.frame_entries_add, text="Rack:").grid(row=4, column=0, padx=5, pady=5)
+        ctk.CTkLabel(self.frame_entries_add, text="Size:").grid(row=1, column=2, padx=5, pady=5)
+        self.entry_size_add = ctk.CTkEntry(self.frame_entries_add)
+        self.entry_size_add.grid(row=1, column=3, padx=5, pady=5)
+
+        ctk.CTkLabel(self.frame_entries_add, text="Type:").grid(row=1, column=4, padx=5, pady=5)
+        self.entry_type_add = ctk.CTkComboBox(self.frame_entries_add, values=["PG", "PT", "LT", "LG", "FT", "FI", "TG", "TT", "TG", "TE", "SENSOR", "PLC", "IO CARD", "PSU", "SWITCH", "INDICATOR", "BUTTON"])
+        self.entry_type_add.grid(row=1, column=5, padx=5, pady=5)
+
+
+        # Row 2
+        ctk.CTkLabel(self.frame_entries_add, text="Range:").grid(row=2, column=0, padx=5, pady=5)
+        self.entry_range_add = ctk.CTkEntry(self.frame_entries_add)
+        self.entry_range_add.grid(row=2, column=1, padx=5, pady=5)
+
+        ctk.CTkLabel(self.frame_entries_add, text="Store:").grid(row=2, column=2, padx=5, pady=5)
+        self.entry_store_add = ctk.CTkEntry(self.frame_entries_add)
+        self.entry_store_add.grid(row=2, column=3, padx=5, pady=5)
+
+        ctk.CTkLabel(self.frame_entries_add, text="Rack:").grid(row=2, column=4, padx=5, pady=5)
         self.entry_rack_add = ctk.CTkEntry(self.frame_entries_add)
-        self.entry_rack_add.grid(row=4, column=1, padx=5, pady=5)
+        self.entry_rack_add.grid(row=2, column=5, padx=5, pady=5)
 
-        ctk.CTkLabel(self.frame_entries_add, text="Column:").grid(row=4, column=2, padx=5, pady=5)
-        self.entry_column_add = ctk.CTkEntry(self.frame_entries_add)
-        self.entry_column_add.grid(row=4, column=3, padx=5, pady=5)
-
-        ctk.CTkLabel(self.frame_entries_add, text="Box No:").grid(row=5, column=0, padx=5, pady=5)
-        self.entry_box_no_add = ctk.CTkEntry(self.frame_entries_add)
-        self.entry_box_no_add.grid(row=5, column=1, padx=5, pady=5)
-
-        ctk.CTkLabel(self.frame_entries_add, text="Row:").grid(row=5, column=2, padx=5, pady=5)
+        # Row 3
+        ctk.CTkLabel(self.frame_entries_add, text="Row:").grid(row=3, column=0, padx=5, pady=5)
         self.entry_row_add = ctk.CTkEntry(self.frame_entries_add)
-        self.entry_row_add.grid(row=5, column=3, padx=5, pady=5)
+        self.entry_row_add.grid(row=3, column=1, padx=5, pady=5)
 
-        ctk.CTkLabel(self.frame_entries_add, text="Description:").grid(row=6, column=0, padx=5, pady=5)
+        ctk.CTkLabel(self.frame_entries_add, text="Column:").grid(row=3, column=2, padx=5, pady=5)
+        self.entry_column_add = ctk.CTkEntry(self.frame_entries_add)
+        self.entry_column_add.grid(row=3, column=3, padx=5, pady=5)
+
+        ctk.CTkLabel(self.frame_entries_add, text="Box No:").grid(row=3, column=4, padx=5, pady=5)
+        self.entry_box_no_add = ctk.CTkEntry(self.frame_entries_add)
+        self.entry_box_no_add.grid(row=3, column=5, padx=5, pady=5)
+
+        # Row 4
+        ctk.CTkLabel(self.frame_entries_add, text="Plant Name:").grid(row=4, column=0, padx=5, pady=5)
+        self.entry_plant_name_add = ctk.CTkComboBox(self.frame_entries_add, values=["CHEMEX", "ZEHUA", "BTX", "HEXANE", "LCP", "TNS", "REFORMER 2", "CFU-10000BPD"])
+        self.entry_plant_name_add.grid(row=4, column=1, padx=5, pady=5)
+
+        ctk.CTkLabel(self.frame_entries_add, text="Part No.:").grid(row=4, column=2, padx=5, pady=5)
+        self.entry_part_no_add = ctk.CTkEntry(self.frame_entries_add)
+        self.entry_part_no_add.grid(row=4, column=3, padx=5, pady=5)
+        
+        ctk.CTkLabel(self.frame_entries_add, text="Tag:").grid(row=4, column=4, padx=5, pady=5)
+        self.entry_tag_add = ctk.CTkEntry(self.frame_entries_add)
+        self.entry_tag_add.grid(row=4, column=5, padx=5, pady=5)
+
+        # Row 8
+        ctk.CTkLabel(self.frame_entries_add, text="Description:").grid(row=5, column=0, padx=5, pady=5)
         self.entry_description_add = tk.Text(self.frame_entries_add, height=5, width=40)
-        self.entry_description_add.grid(row=6, column=1, columnspan=3, padx=5, pady=5)
+        self.entry_description_add.grid(row=5, column=1, columnspan=6, padx=5, pady=5)
+
         self.button_add_product = ctk.CTkButton(self.frame_entries_add, text="Add Product", command=self.add_product)
-        self.button_add_product.grid(row=7, column=0, columnspan=4, pady=10)
+        self.button_add_product.grid(row=6, column=0, columnspan=6, pady=10)
         self.button_clear_entry = ctk.CTkButton(self.frame_entries_add, text="Clear", command=self.clear_add_product_entries)
-        self.button_clear_entry.grid(row=8, column=0, columnspan=4, pady=10)
+        self.button_clear_entry.grid(row=7, column=0, columnspan=6, pady=10)
 
         # Middle Frame Widgets
         ctk.CTkLabel(self.frame_middle_add, text="Search Product:").grid(row=0, column=0, padx=5, pady=5)
@@ -134,7 +152,8 @@ class StoreManagementApp:
 
         # Bottom Frame Widgets
         self.tree_add = ttk.Treeview(self.frame_bottom_add, columns=(
-            "Item No", "Name","Quantity","Size","Type","Range","Store","Rack","Column","Row","Box", "Description", "Plant Name", "Part No", "Tag"), show="headings")
+        "Item No", "Product Name", "Brand", "Model", "Quantity", "Size", "Type", "Range", "Store", "Rack", "Column", "Row", "Box", "Description", "Plant Name", "Part No", "Tag"), show="headings")
+
         
         verscrlbar = ttk.Scrollbar(self.frame_bottom_add, 
                            orient ="vertical", 
@@ -146,7 +165,9 @@ class StoreManagementApp:
         self.tree_add.configure(yscrollcommand=verscrlbar.set)
 
         self.tree_add.heading("Item No", text="Item No")
-        self.tree_add.heading("Name", text="Product Name")
+        self.tree_add.heading("Product Name", text="Product Name")
+        self.tree_add.heading("Brand", text="Brand")
+        self.tree_add.heading("Model", text="Model")
         self.tree_add.heading("Quantity", text="Quantity")
         self.tree_add.heading("Size", text="Size")
         self.tree_add.heading("Type", text="Type")
@@ -160,6 +181,7 @@ class StoreManagementApp:
         self.tree_add.heading("Plant Name", text="Plant Name")
         self.tree_add.heading("Part No", text="Part No")
         self.tree_add.heading("Tag", text="Tag")
+
 
         self.tree_add.pack(fill="both", expand=True)
         ctk.CTkButton(self.frame_bottom_add, text="Back to Home", command=self.show_home_frame).pack(pady=10)
@@ -301,7 +323,7 @@ class StoreManagementApp:
         workbook = Workbook()
         sheet = workbook.active
         sheet.title = "Products"
-        headers = ["Item No", "Product Name", "Quantity", "Size", "Type", "Range", "Store", "Rack", "Column","Row", "Box", "Description", "Plant Name", "Part No", "Tag"]
+        headers = ["Item No", "Product Name", "Brand", "Model", "Quantity", "Size", "Type", "Range", "Store", "Rack", "Column", "Row", "Box", "Description", "Plant Name", "Part No", "Tag"]
         sheet.append(headers)
 
         for product in self.product_list:
@@ -342,63 +364,71 @@ class StoreManagementApp:
                     item_index = index
 
             print(f"Item Index No: {item_index}")
-            item_no = loaded_product_item_no
             product_name = self.entry_product_name_add.get()
-            tag = self.entry_tag_add.get()
-            plant_name = self.entry_plant_name_add.get()
-            store = self.entry_store_add.get()
-            product_type = self.entry_type_add.get()
-            size = self.entry_size_add.get()
-            product_range = self.entry_range_add.get()
+            brand = self.entry_brand_add.get()
+            model = self.entry_model_add.get()
             quantity = self.entry_quantity_add.get()
+            size = self.entry_size_add.get()
+            product_type = self.entry_type_add.get()
+            product_range = self.entry_range_add.get()
+            store = self.entry_store_add.get()
             rack = self.entry_rack_add.get()
-            column = self.entry_column_add.get()
             row = self.entry_row_add.get()
+            column = self.entry_column_add.get()
             box_no = self.entry_box_no_add.get()
             description = self.entry_description_add.get("1.0", tk.END).strip()
-            # part_no = self.entry_part_no_add.get()
-            part_no = self.generate_part_no(plant_name, product_type, product_range)
+            plant_name = self.entry_plant_name_add.get()
+            tag = self.entry_tag_add.get()
+            part_no = self.entry_part_no_add.get()
+            if not part_no:
+                part_no = self.generate_part_no(plant_name, product_type, product_range,brand,model)
+
             self.product_list[item_index] = {
-                "Item No": item_no,
+                "Item No": loaded_product_item_no,
                 "Product Name": product_name,
+                "Brand": brand,
+                "Model": model,
                 "Quantity": quantity,
                 "Size": size,
                 "Type": product_type,
                 "Range": product_range,
                 "Store": store,
                 "Rack": rack,
-                "Column": column,
                 "Row": row,
+                "Column": column,
                 "Box": box_no,
                 "Description": description,
                 "Plant Name": plant_name,
                 "Part No": part_no,
                 "Tag": tag
-            }
-            # self.export_to_excel()
+                }
+
+            self.export_to_excel()
             self.refresh_product_list()
             self.clear_add_product_entries()
             messagebox.showinfo("Success", "Product Updated successfully.")
 
         else:
-            # self.product_loaded_add == 0:
             product_name = self.entry_product_name_add.get()
-            tag = self.entry_tag_add.get()
-            plant_name = self.entry_plant_name_add.get()
-            store = self.entry_store_add.get()
-            product_type = self.entry_type_add.get()
-            size = self.entry_size_add.get()
-            product_range = self.entry_range_add.get()
+            brand = self.entry_brand_add.get()
+            model = self.entry_model_add.get()
             quantity = self.entry_quantity_add.get()
+            size = self.entry_size_add.get()
+            product_type = self.entry_type_add.get()
+            product_range = self.entry_range_add.get()
+            store = self.entry_store_add.get()
             rack = self.entry_rack_add.get()
-            column = self.entry_column_add.get()
             row = self.entry_row_add.get()
+            column = self.entry_column_add.get()
             box_no = self.entry_box_no_add.get()
             description = self.entry_description_add.get("1.0", tk.END).strip()
-            # part_no = self.entry_part_no_add.get()
-            part_no = self.generate_part_no(plant_name, product_type, product_range)
+            plant_name = self.entry_plant_name_add.get()
+            tag = self.entry_tag_add.get()
+            part_no = self.entry_part_no_add.get()
+            if not part_no:
+                part_no = self.generate_part_no(plant_name, product_type, product_range,brand,model)
 
-            if not all([product_name, tag, plant_name, store, product_type, size, product_range, quantity, rack, column, box_no, description, part_no]):
+            if not all([product_name, tag, plant_name, store, product_type, size, product_range, quantity, rack, column, box_no, part_no]):
                 messagebox.showerror("Error", "Please fill all the fields.")
                 return
             
@@ -408,14 +438,16 @@ class StoreManagementApp:
             self.product_list.append({
                 "Item No": item_no,
                 "Product Name": product_name,
+                "Brand": brand,
+                "Model": model,
                 "Quantity": quantity,
                 "Size": size,
                 "Type": product_type,
                 "Range": product_range,
                 "Store": store,
                 "Rack": rack,
-                "Column": column,
                 "Row": row,
+                "Column": column,
                 "Box": box_no,
                 "Description": description,
                 "Plant Name": plant_name,
@@ -428,32 +460,6 @@ class StoreManagementApp:
             messagebox.showinfo("Success", "Product added successfully.")
             self.clear_add_product_entries()
 
-    def withdraw_product(self):
-        pass
-    #     product_name = self.entry_product_name_withdraw.get()
-    #     tag = self.entry_tag_withdraw.get()
-    #     quantity = self.entry_quantity_withdraw.get()
-
-    #     if not all([product_name, tag, quantity]):
-    #         messagebox.showerror("Error", "Please fill all the fields.")
-    #         return
-
-    #     quantity = int(quantity)
-    #     product_found = False
-
-    #     for product in self.product_list:
-    #         if product["Product Name"] == product_name and product["Tag"] == tag:
-    #             product_found = True
-    #             if product["Quantity"] >= quantity:
-    #                 product["Quantity"] -= quantity
-    #                 self.refresh_product_list()
-    #                 messagebox.showinfo("Success", "Product withdrawn successfully.")
-    #             else:
-    #                 messagebox.showerror("Error", "Insufficient quantity in stock.")
-    #             break
-
-    #     if not product_found:
-    #         messagebox.showerror("Error", "Product not found.")
     def load_from_excel(self):
             file_path = "products.xlsx"
             if not file_path:
@@ -470,23 +476,26 @@ class StoreManagementApp:
                     product = {
                         "Item No": row[0],
                         "Product Name": row[1],
-                        "Quantity": row[2],
-                        "Size": row[3],
-                        "Type": row[4],
-                        "Range": row[5],
-                        "Store": row[6],
-                        "Rack": row[7],
-                        "Column": row[8],
-                        "Row": row[9],
-                        "Box": row[10],
-                        "Description": row[11],
-                        "Plant Name": row[12],
-                        "Part No": row[13],
-                        "Tag": row[14]
+                        "Brand": row[2],
+                        "Model": row[3],
+                        "Quantity": row[4],
+                        "Size": row[5],
+                        "Type": row[6],
+                        "Range": row[7],
+                        "Store": row[8],
+                        "Rack": row[9],
+                        "Column": row[10],
+                        "Row": row[11],
+                        "Box": row[12],
+                        "Description": row[13],
+                        "Plant Name": row[14],
+                        "Part No": row[15],
+                        "Tag": row[16]
                     }
                     self.product_list.append(product)
                     self.item_no_counter += 1
                 self.refresh_product_list()
+                self.refresh_product_list_withdraw()
                 # messagebox.showinfo("Load Successful", f"Data loaded successfully from {file_path}")
             except Exception as e:
                 messagebox.showerror("Load Error", f"An error occurred while loading: {e}")
@@ -515,6 +524,8 @@ class StoreManagementApp:
                     self.tree_withdraw.insert("", "end", values=(
                         product["Item No"], 
                         product["Product Name"], 
+                        product["Brand"], 
+                        product["Model"], 
                         product["Quantity"],
                         product["Size"], 
                         product["Type"], 
@@ -522,12 +533,14 @@ class StoreManagementApp:
                         product["Store"], 
                         product["Rack"], 
                         product["Column"], 
-                        product["Row"],
+                        product["Row"], 
                         product["Box"], 
                         product["Description"], 
                         product["Plant Name"], 
                         product["Part No"], 
-                        product["Tag"]))
+                        product["Tag"]
+                    ))
+
                     
     def search_product_add(self):
             search_term = self.entry_search_add.get() if isinstance(self.entry_search_add.get(), str) else str(self.entry_search_add.get()).lower()
@@ -544,6 +557,8 @@ class StoreManagementApp:
                 if (
                     search_term in str(product["Item No"]) or
                     search_term in product["Product Name"].lower() or
+                    search_term in product["Brand"].lower() or
+                    search_term in product["Model"].lower() or
                     search_term in product["Plant Name"].lower() or
                     search_term in product["Type"].lower() or
                     search_term in product["Description"].lower() or
@@ -555,6 +570,8 @@ class StoreManagementApp:
                     self.tree_add.insert("", "end", values=(
                         product["Item No"], 
                         product["Product Name"], 
+                        product["Brand"], 
+                        product["Model"], 
                         product["Quantity"],
                         product["Size"], 
                         product["Type"], 
@@ -562,12 +579,13 @@ class StoreManagementApp:
                         product["Store"], 
                         product["Rack"], 
                         product["Column"], 
-                        product["Row"],
+                        product["Row"], 
                         product["Box"], 
                         product["Description"], 
                         product["Plant Name"], 
                         product["Part No"], 
-                        product["Tag"]))
+                        product["Tag"]
+                    ))
             
     def refresh_product_list(self):
         self.entry_search_add.delete(0, 'end')
@@ -577,8 +595,24 @@ class StoreManagementApp:
             self.tree_add.delete(i)
         for product in self.product_list:
             self.tree_add.insert("", "end", values=(
-                product["Item No"], product["Product Name"], product["Quantity"],product["Size"], product["Type"], product["Range"], product["Store"], product["Rack"], product["Column"],product["Row"], product["Box"], product["Description"], product["Plant Name"], product["Part No"], product["Tag"]
-            ))
+            product["Item No"], 
+            product["Product Name"], 
+            product["Brand"], 
+            product["Model"], 
+            product["Quantity"], 
+            product["Size"], 
+            product["Type"], 
+            product["Range"], 
+            product["Store"], 
+            product["Rack"], 
+            product["Column"], 
+            product["Row"], 
+            product["Box"], 
+            product["Description"], 
+            product["Plant Name"], 
+            product["Part No"], 
+            product["Tag"]
+        ))
 
     def refresh_product_list_withdraw(self):
         self.searched_withdraw =0
@@ -613,34 +647,89 @@ class StoreManagementApp:
                 selected_product = self.product_list[index]
 
         self.product_loaded_add = 1
-        self.button_add_product.configure(text ="Update")
+        self.button_add_product.configure(text="Update")
+
         self.entry_product_name_add.delete(0, tk.END)
-        self.entry_product_name_add.insert(0, selected_product["Product Name"])
+        if selected_product["Product Name"] is None:
+            self.entry_product_name_add.insert(0, "")
+        else:
+
+            self.entry_product_name_add.insert(0, selected_product["Product Name"])
+
+        self.entry_brand_add.delete(0, tk.END)
+        if selected_product["Brand"] is None:
+            self.entry_brand_add.insert(0, "")
+        else:
+            self.entry_brand_add.insert(0, selected_product["Brand"])
+
+        self.entry_model_add.delete(0, tk.END)
+        if selected_product["Model"] is None:
+            self.entry_model_add.insert(0, "")
+        else:
+            self.entry_model_add.insert(0, selected_product["Model"])
+
         self.entry_quantity_add.delete(0, tk.END)
-        self.entry_quantity_add.insert(0, selected_product["Quantity"])
+
+        if selected_product["Quantity"] is None:
+            self.entry_quantity_add.insert(0, "")
+        else:
+            self.entry_quantity_add.insert(0, selected_product["Quantity"])
+
         self.entry_type_add.set(selected_product["Type"])
+
         self.entry_range_add.delete(0, tk.END)
-        self.entry_range_add.insert(0, selected_product["Range"])
+
+        if selected_product["Range"] is None:
+            self.entry_range_add.insert(0, "")
+        else:
+            self.entry_range_add.insert(0, selected_product["Range"])
+
         self.entry_store_add.delete(0, tk.END)
-        self.entry_store_add.insert(0, selected_product["Store"])
+
+        if selected_product["Store"] is None:
+            self.entry_store_add.insert(0,"")
+        else:
+            self.entry_store_add.insert(0, selected_product["Store"])
+
         self.entry_rack_add.delete(0, tk.END)
         self.entry_rack_add.insert(0, selected_product["Rack"])
+
         self.entry_column_add.delete(0, tk.END)
         self.entry_column_add.insert(0, selected_product["Column"])
+
         self.entry_box_no_add.delete(0, tk.END)
         self.entry_box_no_add.insert(0, selected_product["Box"])
+
         self.entry_plant_name_add.set(selected_product["Plant Name"])
+
         self.entry_row_add.delete(0, tk.END)
         self.entry_row_add.insert(0, selected_product["Row"])
+
         self.entry_tag_add.delete(0, tk.END)
-        self.entry_tag_add.insert(0, selected_product["Tag"])
+
+        if selected_product["Tag"] is None:
+            self.entry_tag_add.insert(0,"")
+        else:
+            self.entry_tag_add.insert(0, selected_product["Tag"])
+
+        self.entry_part_no_add.delete(0, tk.END)
+        self.entry_part_no_add.insert(0, selected_product["Part No"])
+
         self.entry_size_add.delete(0, tk.END)
         self.entry_size_add.insert(0, selected_product["Size"])
-        self.entry_description_add.delete('1.0', 'end')
-        self.entry_description_add.insert("1.0", selected_product["Description"])
+
+        self.entry_description_add.delete('1.0', tk.END)
+        if selected_product["Description"] is None:
+            self.entry_description_add.insert("1.0", "")
+        else:
+            self.entry_description_add.insert("1.0", selected_product["Description"])
+
 
     def clear_add_product_entries(self):
         self.entry_product_name_add.delete(0, 'end')
+        self.entry_brand_add.delete(0, 'end')
+        self.entry_model_add.delete(0, 'end')
+        self.entry_part_no_add.delete(0, 'end')
         self.entry_tag_add.delete(0, 'end')
         self.entry_plant_name_add.set("")
         self.entry_store_add.delete(0, 'end')
@@ -678,7 +767,13 @@ class StoreManagementApp:
         
         
 
-    def generate_part_no(self, plant_name, type_, range_):
+    def generate_part_no(self, plant_name, type_, range_,_brand,_model):
+    # Function to remove vowels from a string
+        def remove_vowels(s):
+            vowels = "AEIOUaeiou"
+            return "".join([char for char in s if char not in vowels])
+
+        # Mapping of plant codes
         plant_mapping = {
             "CHEMEX": "CHE",
             "ZEHUA": "ZEH",
@@ -687,11 +782,33 @@ class StoreManagementApp:
             "LCP": "LCP",
             "TNS": "TNS",
             "REFORMER 2": "REF02",
-            "CFU-10000BPD": "CFU"
+            "CFU-10000BPD": "CFU",
+            "FLARE": "FLR",
+            "K601A": "K601A",
+            "K601B": "K601B",
+            "K401A": "K401A",
+            "K401B": "K401B",
+            "K401C": "K401C",
+            "COOLING TOWER" :"C-TOWER",
+            "RO" : "RO"
         }
-        plant_code = plant_mapping.get(plant_name.upper(), plant_name[:3].upper())
-        part_no = f"{plant_code}-{type_.upper()}-{range_}"
+
+        # Get plant code from mapping or default to first three letters uppercase without vowels
+        plant_code = plant_mapping.get(plant_name.upper(), remove_vowels(plant_name.upper())[:5])
+
+        # Remove vowels from plant_name and type_
+        # plant_name_without_vowels = remove_vowels(plant_name.upper())
+        # type_without_vowels = remove_vowels(type_.upper())
+
+        # Construct part number based on whether brand is provided
+        if _brand and _model:
+            part_no = f"{plant_code}-{type_}-{_brand}-{_model}-{range_}"
+        else:
+            part_no = f"{plant_code}-{type_}-{range_}"
+    # Construct part number in desired format
+    
         return part_no
+        
     def add_to_cart(self,added_quantity):
         if not self.cart_list:
             self.previous_product_list = self.product_list.copy()  # Save a copy of the current product list
@@ -841,7 +958,7 @@ class StoreManagementApp:
     
         
 if __name__ == "__main__":
-    ctk.set_appearance_mode("System")  # Modes: "System" (default), "Dark", "Light"
+    ctk.set_appearance_mode("Light")  # Modes: "System" (default), "Dark", "Light"
     ctk.set_default_color_theme("green")  # Themes: "blue" (default), "green", "dark-blue"
     root = ctk.CTk()
     app = StoreManagementApp(root)
