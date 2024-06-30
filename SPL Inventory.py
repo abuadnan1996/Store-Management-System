@@ -46,13 +46,19 @@ class StoreManagementApp:
         ctk.CTkButton(self.frame_home, text="Withdraw Product", command=self.show_withdraw_product_frame).pack(pady=10)
 
     def setup_add_product_frame(self):
+        self.top_button_add = ctk.CTkFrame(self.frame_add_product)
+        self.top_button_add.pack(padx=10)
+        ctk.CTkButton(self.top_button_add, text="Back to Home", command=self.show_home_frame).pack()
+
         self.frame_logo_add = ctk.CTkFrame(self.frame_add_product)
         self.frame_logo_add.pack(pady=10, padx=10, fill="x")
+        
 
         self.company_name_add = ctk.CTkLabel(self.frame_logo_add, text="Super Petrochemical Limited", font=("Arial", 24, "bold"))
-        self.company_name_add.pack(pady=5)
+        self.company_name_add.pack(padx=10)
+
         self.department_name_add = ctk.CTkLabel(self.frame_logo_add, text="Instrument and Control Department", font=("Arial", 15, "bold"))
-        self.department_name_add.pack(pady=5)
+        self.department_name_add.pack(padx=10)
 
         self.frame_top_add = ctk.CTkFrame(self.frame_add_product)
         self.frame_top_add.pack(pady=10, padx=10, fill="x")
@@ -184,8 +190,8 @@ class StoreManagementApp:
 
 
         self.tree_add.pack(fill="both", expand=True)
-        ctk.CTkButton(self.frame_bottom_add, text="Back to Home", command=self.show_home_frame).pack(pady=10)
-        ctk.CTkButton(self.frame_bottom_add, text="Print", command=self.print_popup).pack(pady=10)
+        # ctk.CTkButton(self.frame_bottom_add, text="Back to Home", command=self.show_home_frame).pack(pady=10)
+        # ctk.CTkButton(self.frame_bottom_add, text="Print", command=self.print_popup).pack(pady=10)
         self.tree_add.bind("<Double-1>", self.load_selected_product_add)
         self.refresh_product_list()
 
@@ -295,7 +301,7 @@ class StoreManagementApp:
 
         # self.tree_withdraw.insert("", "end",("Item No","1"))
         ctk.CTkButton(self.frame_withdraw_product, text="Back to Home", command=self.show_home_frame).pack(pady=10)
-        ctk.CTkButton(self.frame_withdraw_product, text="Print", command=self.print_popup).pack(pady=10)
+        # ctk.CTkButton(self.frame_withdraw_product, text="Print", command=self.print_popup).pack(pady=10)
 
         self.tree_withdraw.bind("<Double-1>", lambda event: self.popup_quantity())
 
@@ -494,11 +500,18 @@ class StoreManagementApp:
                     }
                     self.product_list.append(product)
                     self.item_no_counter += 1
+                self.replace_none_with_empty_string(self.product_list)
                 self.refresh_product_list()
                 self.refresh_product_list_withdraw()
                 # messagebox.showinfo("Load Successful", f"Data loaded successfully from {file_path}")
             except Exception as e:
                 messagebox.showerror("Load Error", f"An error occurred while loading: {e}")
+
+    def replace_none_with_empty_string(self,product_list):
+        for product in product_list:
+            for key, value in product.items():
+                if value is None:
+                    product[key] = ""
 
     def search_product_withdraw(self):
             # search_term = self.entry_search_add.get() if isinstance(self.entry_search_add.get(), str) else str(self.entry_search_add.get()).lower()
@@ -546,7 +559,6 @@ class StoreManagementApp:
             search_term = self.entry_search_add.get() if isinstance(self.entry_search_add.get(), str) else str(self.entry_search_add.get()).lower()
             # search_term = self.entry_search_withdraw.get() if isinstance(self.entry_search_withdraw.get(), str) else str(self.entry_search_withdraw.get()).lower()
             self.searched_add=1
-
             search_term = search_term.lower() # Convert all characters from search entry to lower-case
             for row in self.tree_add.get_children():
                 self.tree_add.delete(row)
