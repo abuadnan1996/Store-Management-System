@@ -3,6 +3,8 @@ import tkinter as tk
 from tkinter import messagebox, filedialog, ttk
 from openpyxl import Workbook
 import customtkinter as ctk
+import mysql.connector
+from mysql.connector import Error
 
 class StoreManagementApp:
     def __init__(self, root):
@@ -14,11 +16,16 @@ class StoreManagementApp:
         self.cart_list = []
         self.numbers =[]
         self.available_numbers = []
+        self.product_list_db=[]
+        self.product_list_test=[]
+        self.fields = ("Item No", "Product Name", "Brand", "Model", "Quantity", "Size", "Type", "Range", "Store", "Rack", 
+                         "Column", "Row", "Box", "Description", "Plant Name", "Part No", "Tag")
+        self.db_fields = ("product_name", "brand", "model", "quantity", "size", "type", "range", "store", "rack", 
+                         "column", "row", "box", "description", "plant", "part_no", "tag")
         self.popup_window=0
         self.item_no_counter = 1
         self.requisition_item_counter=1
         self.product_loaded_add=0
-
         #Boolean Flag for Withdraw window if searched or not
         self.searched_withdraw=0
         self.searched_add=0
@@ -27,10 +34,17 @@ class StoreManagementApp:
         self.setup_add_product_frame()
         self.setup_withdraw_product_frame()
         self.show_home_frame()
+        self.create_db_connection("localhost","root","Adnan1996","instrument_store")
         self.load_from_excel()
+        self.load_from_db('instrument_store.stocks')
         
-        # self.find_missing_number()
-
+        # print(self.product_list)
+        for products in self.product_list:
+            values = tuple(products.values())
+            self.product_list_db.append(values)
+        # print(f"Products in tuples::: {self.product_list_db}")
+        # self.add_to_db("stocks",self.product_list_db)
+        
     def setup_frames(self):
         self.frame_home = ctk.CTkFrame(self.root)
         self.frame_add_product = ctk.CTkFrame(self.root)
@@ -157,8 +171,7 @@ class StoreManagementApp:
         ctk.CTkButton(self.frame_middle_add, text="Clear", command=self.refresh_product_list).grid(row=0, column=3, padx=5, pady=5)
 
         # Bottom Frame Widgets
-        self.tree_add = ttk.Treeview(self.frame_bottom_add, columns=(
-        "Item No", "Product Name", "Brand", "Model", "Quantity", "Size", "Type", "Range", "Store", "Rack", "Column", "Row", "Box", "Description", "Plant Name", "Part No", "Tag"), show="headings")
+        self.tree_add = ttk.Treeview(self.frame_bottom_add, columns=self.fields, show="headings")
 
         
         verscrlbar = ttk.Scrollbar(self.frame_bottom_add, 
@@ -240,6 +253,7 @@ class StoreManagementApp:
         self.tree_requisition.heading("Size", text="Size")
         self.tree_requisition.heading("Remarks", text="Remarks")
         self.tree_requisition.pack(fill="x", expand=True)
+        self.tree_requisition.bind("<Delete>", lambda event: self.delete_selected())
 
         
         # ctk.CTkLabel(self.frame_entries_withdraw, text="Quantity:").grid(row=1, column=0, padx=5, pady=5)
@@ -309,7 +323,9 @@ class StoreManagementApp:
         # self.add_to_cart()
         self.refresh_product_list_withdraw()
         
-
+    def delete_selected(self):
+        print("Delete Pressed")
+        pass
     def show_home_frame(self):
         self.frame_home.pack(pady=10, padx=10, fill="both", expand=True)
         self.frame_add_product.pack_forget()
@@ -319,9 +335,11 @@ class StoreManagementApp:
         self.frame_add_product.pack(pady=10, padx=10, fill="both", expand=True)
         self.frame_home.pack_forget()
         self.frame_withdraw_product.pack_forget()
+        self.refresh_product_list()
 
     def show_withdraw_product_frame(self):
         self.frame_withdraw_product.pack(pady=10, padx=10, fill="both", expand=True)
+        self.refresh_product_list_withdraw()
         self.frame_home.pack_forget()
         self.frame_add_product.pack_forget()
     def export_to_excel(self):
@@ -346,30 +364,30 @@ class StoreManagementApp:
         # messagebox.showinfo("Excel File", "Products saved to products.xlsx")
 
     def add_product(self):
-
-        if self.product_loaded_add == 1: # When product is loaded from the table, selected product will be updated
+        ### When product is loaded from the table, selected product will be updated
+        if self.product_loaded_add == 1: 
             selected_item = self.tree_add.selection()
             if not selected_item:
                 messagebox.showerror("Selection Error", "No item selected to update")
                 return
             
-            print(f"Selected Item: {selected_item}")
-            print(f"Focused Item: {self.tree_add.focus()}")
+            # print(f"Selected Item: {selected_item}")
+            # print(f"Focused Item: {self.tree_add.focus()}")
             item_index_no = self.tree_add.focus()
             # print(f"Selected Product: {self.tree_add.item(item_index_no)}")
             loaded_product_item_no = self.tree_add.item(item_index_no)["values"][0]
             loaded_product_item_no = f"{loaded_product_item_no:06d}"
-            print(f"Loaded Product Item No: {loaded_product_item_no}")
+            # print(f"Loaded Product Item No: {loaded_product_item_no}")
             
             for index, product in enumerate(self.product_list):
 
                 if (
                     str(loaded_product_item_no) in str(product["Item No"]).lower() ):
-                    print(f"Loaded Product::::::: {self.product_list[index]}")
+                    # print(f"Loaded Product::::::: {self.product_list[index]}")
                     selected_product = self.product_list[index]
                     item_index = index
 
-            print(f"Item Index No: {item_index}")
+            # print(f"Item Index No: {item_index}")
             product_name = self.entry_product_name_add.get()
             brand = self.entry_brand_add.get()
             model = self.entry_model_add.get()
@@ -408,11 +426,12 @@ class StoreManagementApp:
                 "Part No": part_no,
                 "Tag": tag
                 }
-
-            self.export_to_excel()
+            updated_list = self.product_list[int(loaded_product_item_no)-1]
+            self.update_db('instrument_store.stocks', updated_list)
+            # self.export_to_excel()
             self.refresh_product_list()
             self.clear_add_product_entries()
-            messagebox.showinfo("Success", "Product Updated successfully.")
+            
 
         else:
             product_name = self.entry_product_name_add.get()
@@ -434,13 +453,12 @@ class StoreManagementApp:
             if not part_no:
                 part_no = self.generate_part_no(plant_name, product_type, product_range,brand,model)
 
-            if not all([product_name, tag, plant_name, store, product_type, size, product_range, quantity, rack, column, box_no, part_no]):
+            if not all([product_name, plant_name, store, product_type, size, product_range, quantity, rack, column, box_no, part_no]):
                 messagebox.showerror("Error", "Please fill all the fields.")
                 return
             
             item_no = f"{self.item_no_counter:06d}"
-            self.item_no_counter += 1
-
+            # print(f"Counter No:: {self.item_no_counter}")
             self.product_list.append({
                 "Item No": item_no,
                 "Product Name": product_name,
@@ -460,52 +478,194 @@ class StoreManagementApp:
                 "Part No": part_no,
                 "Tag": tag
             })
-            self.export_to_excel()
+
+            self.add_to_db('instrument_store.stocks',self.product_list[self.item_no_counter-1])
+            # self.export_to_excel()
             self.refresh_product_list()
-            
+            # self.item_no_counter += 1
             messagebox.showinfo("Success", "Product added successfully.")
             self.clear_add_product_entries()
+    # Function to convert camel case to snake case
+    def to_snake_case(self,s):
+        s = s.lower()
+        s = s.replace(' ', '_')
+        s = s.replace('plant_name','plant')
+        return s
+
+
+
+    def create_db_connection(self, host_name, user_name, user_password, db_name):
+        connection = None
+        try:
+            self.mydb = mysql.connector.connect(
+                host=host_name,
+                user=user_name,
+                passwd=user_password,
+                database=db_name
+            )
+            print("MySQL Database connection successful")
+        except Error as err:
+            print(f"Error: '{err}'")
+        return self.mydb
+
+    # def update_db(self,table,product):
+    #     _product = product
+    #     fields = list(_product.keys())
+    #     values = list(_product.values())
+    #     fields.pop(0)
+    #     item_no = int(values.pop(0))
+    #     print(item_no)
+    #     print(f"Values:: {values[2]}")
+
+    #     sqlFormula = f"""UPDATE instrument_store.stocks SET
+    #         product_name = {values[0]},
+    #         brand = '{values[1]}',
+    #         model = '{values[2]}',
+    #         quantity = '{values[3]}',
+    #         size = '{values[4]}',
+    #         type = '{values[5]}',
+    #         range = '{values[6]}',
+    #         store = '{values[7]}',
+    #         rack = '{values[8]}',
+    #         column = '{values[9]}',
+    #         row = '{values[10]}',
+    #         box = '{values[11]}',
+    #         description = '{values[12]}',
+    #         plant = '{values[13]}',
+    #         part_no = '{values[14]}',
+    #         tag = '{values[15]}',
+    #         WHERE item_no = {item_no}
+
+    #     """
+
+    #     print(f"SQL Query:: {sqlFormula}")
+    #     mycursor = self.mydb.cursor()        
+    #     mycursor.execute(sqlFormula)
+    #     self.mydb.commit()
+    def update_db(self, table, product):
+        print(product)
+        _product = product
+        fields = list(_product.keys())
+        values = list(_product.values())
+        fields.pop(0)
+        item_no = int(values.pop(0))
+        print(item_no)
+        print(f"Values:: {values[2]}")
+
+        for field, value in zip(self.db_fields, values):
+            print(f"{field} : {value}")
+            mycursor = self.mydb.cursor()
+            sqlFormula = f"UPDATE {table} SET {field}= %s WHERE item_no = %s"
+            try:
+                mycursor.execute(sqlFormula, (value, item_no))
+                self.mydb.commit()
+                print(f"Updated {field} = {value} for item_no = {item_no}")
+            except mysql.connector.Error as err:
+                print(f"Error: {err}")
+                self.mydb.rollback()
+        
+        mycursor.close()
+        # Ensure the product dictionary is not empty
+        # if not _product:
+        #     raise ValueError("Product dictionary must contain values to update")
+
+        
+
+    def add_to_db(self,table,product):
+        values = tuple(product.values())
+        print(f"value to added:: {values}") 
+        mycursor = self.mydb.cursor()
+        formula =f"INSERT INTO {table} VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        mycursor.execute(formula,values)
+        self.mydb.commit()
+
+        # mycursor.execute(f""/INSERT INTO 'stocks' {self.db_fields} VALUES (3,'PT', 'YOKOGAWA', 'EJ', 2, '0.5', '-', '24V', '1', '2', '3', '4', '6', 'XXX', '3', '3')/""")
+        # mycursor.execute("INSERT INTO `instrument_store`.`stocks` (`item_no`, `product_name`, `brand`, `model`, `quantity`, `size`, `type`, `range`, `store`, `rack`, `row`, `column`, `box`, `description`, `plant`, `tag`) VALUES ('3', 'FT', 'yokogawa', 'EJX', '3', '0.5', 'v', '24V', '1', '5', '6', '3', '1', '4', '5', '3')")
+
+
+
+    # def execute_query(self, query, data):
+    #     cursor = self.db_connection.cursor()
+    #     try:
+    #         cursor.execute(query, data)
+    #         self.db_connection.commit()
+    #         print("Query successful")
+    #     except Error as err:
+    #         print(f"Error: '{err}'")
+
 
     def load_from_excel(self):
-            file_path = "products.xlsx"
-            if not file_path:
-                return
-            
-            try:
-                workbook = openpyxl.load_workbook(file_path)
-                sheet = workbook.active
+        pass
+        # self.load_from_db('instrument_store.stocks')
+        # file_path = "products.xlsx"
+        # if not file_path:
+        #     return
+        
+        # try:
+        #     workbook = openpyxl.load_workbook(file_path)
+        #     sheet = workbook.active
 
-                self.product_list = []
-                self.item_no_counter = 1
+        #     self.product_list = []
+        #     self.item_no_counter = 1
 
-                for row in sheet.iter_rows(min_row=2, values_only=True):
-                    product = {
-                        "Item No": row[0],
-                        "Product Name": row[1],
-                        "Brand": row[2],
-                        "Model": row[3],
-                        "Quantity": row[4],
-                        "Size": row[5],
-                        "Type": row[6],
-                        "Range": row[7],
-                        "Store": row[8],
-                        "Rack": row[9],
-                        "Column": row[10],
-                        "Row": row[11],
-                        "Box": row[12],
-                        "Description": row[13],
-                        "Plant Name": row[14],
-                        "Part No": row[15],
-                        "Tag": row[16]
-                    }
-                    self.product_list.append(product)
-                    self.item_no_counter += 1
-                self.replace_none_with_empty_string(self.product_list)
-                self.refresh_product_list()
-                self.refresh_product_list_withdraw()
-                # messagebox.showinfo("Load Successful", f"Data loaded successfully from {file_path}")
-            except Exception as e:
-                messagebox.showerror("Load Error", f"An error occurred while loading: {e}")
+        #     for row in sheet.iter_rows(min_row=2, values_only=True):
+        #         product = {
+        #             "Item No": row[0],
+        #             "Product Name": row[1],
+        #             "Brand": row[2],
+        #             "Model": row[3],
+        #             "Quantity": row[4],
+        #             "Size": row[5],
+        #             "Type": row[6],
+        #             "Range": row[7],
+        #             "Store": row[8],
+        #             "Rack": row[9],
+        #             "Column": row[10],
+        #             "Row": row[11],
+        #             "Box": row[12],
+        #             "Description": row[13],
+        #             "Plant Name": row[14],
+        #             "Part No": row[15],
+        #             "Tag": row[16]
+        #         }
+        #         self.product_list.append(product)
+        #         self.item_no_counter += 1
+        #     self.replace_none_with_empty_string(self.product_list)
+        #     self.refresh_product_list()
+        #     self.refresh_product_list_withdraw()
+        #     # messagebox.showinfo("Load Successful", f"Data loaded successfully from {file_path}")
+        # except Exception as e:
+        #     messagebox.showerror("Load Error", f"An error occurred while loading: {e}")
+    def load_from_db(self,table):
+        connection = self.mydb.cursor()
+        sql_formula = f"SELECT * FROM {table}"
+        connection.execute(sql_formula)
+        records = connection.fetchall()
+        # print(f"Records:: {records}")
+
+        for items in records:
+            products = {
+            "Item No"       :   f"{items[0]:06d}",
+            "Product Name"  :items[1],   
+            "Brand"     :items[2],
+            "Model"     :items[3], 
+            "Quantity"  :items[4],
+            "Size"      :items[5], 
+            "Type"      :items[6], 
+            "Range"     :items[7], 
+            "Store"     :items[8], 
+            "Rack"      :items[9], 
+            "Column"    :items[10], 
+            "Row"       :items[11], 
+            "Box"       :items[12], 
+            "Description":items[13], 
+            "Plant Name" :items[14], 
+            "Part No"    :items[15], 
+            "Tag"       :items[16]
+            }
+            self.item_no_counter += 1
+            self.product_list.append(products)
+        # print(f"Product list--->> {self.product_list}")
 
     def replace_none_with_empty_string(self,product_list):
         for product in product_list:
@@ -605,25 +765,25 @@ class StoreManagementApp:
         self.button_add_product.configure(text ="Add Product")
         for i in self.tree_add.get_children():
             self.tree_add.delete(i)
-        for product in self.product_list:
+        for products in self.product_list:
             self.tree_add.insert("", "end", values=(
-            product["Item No"], 
-            product["Product Name"], 
-            product["Brand"], 
-            product["Model"], 
-            product["Quantity"], 
-            product["Size"], 
-            product["Type"], 
-            product["Range"], 
-            product["Store"], 
-            product["Rack"], 
-            product["Column"], 
-            product["Row"], 
-            product["Box"], 
-            product["Description"], 
-            product["Plant Name"], 
-            product["Part No"], 
-            product["Tag"]
+            products["Item No"], 
+            products["Product Name"], 
+            products["Brand"], 
+            products["Model"], 
+            products["Quantity"], 
+            products["Size"], 
+            products["Type"], 
+            products["Range"], 
+            products["Store"], 
+            products["Rack"], 
+            products["Column"], 
+            products["Row"], 
+            products["Box"], 
+            products["Description"], 
+            products["Plant Name"], 
+            products["Part No"], 
+            products["Tag"]
         ))
 
     def refresh_product_list_withdraw(self):
@@ -632,9 +792,9 @@ class StoreManagementApp:
         for i in self.tree_withdraw.get_children():
             self.tree_withdraw.delete(i)
         # print(f"Product List:{self.product_list}")
-        for product in self.product_list:
+        for products in self.product_list:
             self.tree_withdraw.insert("", "end", values=(
-                    product["Item No"], product["Product Name"], product["Quantity"],product["Size"], product["Type"], product["Range"], product["Store"], product["Rack"], product["Column"],product["Row"], product["Box"], product["Description"], product["Plant Name"], product["Part No"], product["Tag"]
+                    products["Item No"], products["Product Name"], products["Quantity"],products["Size"], products["Type"], products["Range"], products["Store"], products["Rack"], products["Column"],products["Row"], products["Box"], products["Description"], products["Plant Name"], products["Part No"], products["Tag"]
             ))
 
        
